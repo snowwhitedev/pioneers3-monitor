@@ -64,20 +64,12 @@ function App() {
       {tokenWeights.length > 0 ? (
         <BrowserRouter>
           <Switch>
-            <Route
-              exacts
-              strict
-              path="/pair/:pairAddress"
-              render={({ match }) => {
-                return <Redirect to="/home" />
-              }}
-            />
-            <Route path="/home">
+            <Route path="/">
               <LayoutWrapper savedOpen={savedOpen} setSavedOpen={setSavedOpen}>
                 <GlobalPage tokenWeights={tokenWeights} />
               </LayoutWrapper>
             </Route>
-            <Redirect to="/home" />
+            <Redirect to="/" />
           </Switch>
         </BrowserRouter>
       ) : (
