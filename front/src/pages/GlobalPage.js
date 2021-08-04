@@ -7,6 +7,7 @@ import { AutoRow, RowBetween } from '../components/Row'
 import { AutoColumn } from '../components/Column'
 import PairList from '../components/PairList'
 import Search from '../components/Search'
+import Spinner from '../components/Spinner'
 
 import { useMedia } from 'react-use'
 import Panel from '../components/Panel'
@@ -41,6 +42,9 @@ function GlobalPage( { tokenWeights } ) {
   const [addressWeights, setAddressWeights] = useState(['0', '0'])
   const [historyData, setHistoryData] = useState([[], []])
   const [showError, setShowError] = useState(false)
+
+  const [loadingWeight, setLoadingWeight] = useState(false)
+  const [loadingHistory, setLoadingHistory] = useState(false)
   // breakpoints
   const below800 = useMedia('(max-width: 800px)')
 
@@ -55,23 +59,29 @@ function GlobalPage( { tokenWeights } ) {
   const searchHandler = async (address) => {
     const getWeights = async () => {
       try {
+        setLoadingWeight(true)
         const lpTotalWeights = await getTotalWeight()
         const weights = await getAddressWeights(address)
         setShowError(false)
         setLPWeights([...lpTotalWeights])
         setAddressWeights([...weights])
+        setLoadingWeight(false)
       } catch {
         setShowError(true)
+        setLoadingWeight(false)
       }
     }
 
     const getHistory = async () => {
       try {
+        setLoadingHistory(true)
         const data = await getHistoryData(address)
         setHistoryData([...data])
         setShowError(false)
+        setLoadingHistory(false)
       } catch {
         setShowError(true)
+        setLoadingHistory(false)
       }
     }
     if (!!address) {
@@ -100,29 +110,38 @@ function GlobalPage( { tokenWeights } ) {
             {LP_TOKENS.map((lp, idx) => {
               return (
                 <Panel style={{ height: '100%' }} key={idx}>
-                  <Box>
-                    <AutoColumn gap="36px">
-                      <AutoColumn gap="20px">
-                        <RowBetween>
-                          <TYPE.main>{lp.symbol} Pool</TYPE.main>
-                          <div />
-                        </RowBetween>
-                        <RowBetween align="flex-end">
-                          <TYPE.main fontSize={'1.5rem'} lineHeight={1} fontWeight={600}>
-                            {formattedNum(lpWeights[idx], false)}
-                          </TYPE.main>
-                        </RowBetween>
-                        <RowBetween align="flex-end">
-                          <TYPE.main fontSize={'1.5rem'} lineHeight={1} fontWeight={600}>
-                            {formattedNum(addressWeights[idx], false)}
-                          </TYPE.main>
-                          <TYPE.main fontSize={12}>
-                            {formattedPercent(getPercent(lpWeights[idx], addressWeights[idx]))}
-                          </TYPE.main>
-                        </RowBetween>
-                      </AutoColumn>
-                    </AutoColumn>
-                  </Box>
+                  { loadingWeight === false
+                    ? (
+                      <Box>
+                        <AutoColumn gap="36px">
+                          <AutoColumn gap="20px">
+                            <RowBetween>
+                              <TYPE.main>{lp.symbol} Pool</TYPE.main>
+                              <div />
+                            </RowBetween>
+                            <RowBetween align="flex-end">
+                              <TYPE.main fontSize={'1.5rem'} lineHeight={1} fontWeight={600}>
+                                {formattedNum(lpWeights[idx], false)}
+                              </TYPE.main>
+                            </RowBetween>
+                            <RowBetween align="flex-end">
+                              <TYPE.main fontSize={'1.5rem'} lineHeight={1} fontWeight={600}>
+                                {formattedNum(addressWeights[idx], false)}
+                              </TYPE.main>
+                              <TYPE.main fontSize={12}>
+                                {formattedPercent(getPercent(lpWeights[idx], addressWeights[idx]))}
+                              </TYPE.main>
+                            </RowBetween>
+                          </AutoColumn>
+                        </AutoColumn>
+                      </Box>
+                    )
+                    : (
+                      <div style={{display: 'flex', justifyContent: 'center'}}>
+                        <Spinner />
+                      </div>
+                    )
+                  }
                 </Panel>
               )
             })}
@@ -131,25 +150,35 @@ function GlobalPage( { tokenWeights } ) {
             <Panel>
               <Box>
                 <AutoColumn gap="36px">
-                  <AutoColumn gap="20px">
-                    <RowBetween>
-                      <TYPE.main>Aggregation</TYPE.main>
-                      <div />
-                    </RowBetween>
-                    <RowBetween align="flex-end">
-                      <TYPE.main fontSize={'1.5rem'} lineHeight={1} fontWeight={600}>
-                        {formattedNum(getSumOfWeights(lpWeights[0], lpWeights[1]), false)}
-                      </TYPE.main>
-                    </RowBetween>
-                    <RowBetween align="flex-end">
-                      <TYPE.main fontSize={'1.5rem'} lineHeight={1} fontWeight={600}>
-                        {formattedNum(getSumOfWeights(addressWeights[0], addressWeights[1]), false)}
-                      </TYPE.main>
-                      <TYPE.main fontSize={12}>
-                        {formattedPercent(getPercent(getSumOfWeights(lpWeights[0], lpWeights[1]), getSumOfWeights(addressWeights[0], addressWeights[1])))}
-                      </TYPE.main>
-                    </RowBetween>
-                  </AutoColumn>
+                  {
+                    loadingWeight === false
+                      ? (
+                        <AutoColumn gap="20px">
+                          <RowBetween>
+                            <TYPE.main>Aggregation</TYPE.main>
+                            <div />
+                          </RowBetween>
+                          <RowBetween align="flex-end">
+                            <TYPE.main fontSize={'1.5rem'} lineHeight={1} fontWeight={600}>
+                              {formattedNum(getSumOfWeights(lpWeights[0], lpWeights[1]), false)}
+                            </TYPE.main>
+                          </RowBetween>
+                          <RowBetween align="flex-end">
+                            <TYPE.main fontSize={'1.5rem'} lineHeight={1} fontWeight={600}>
+                              {formattedNum(getSumOfWeights(addressWeights[0], addressWeights[1]), false)}
+                            </TYPE.main>
+                            <TYPE.main fontSize={12}>
+                              {formattedPercent(getPercent(getSumOfWeights(lpWeights[0], lpWeights[1]), getSumOfWeights(addressWeights[0], addressWeights[1])))}
+                            </TYPE.main>
+                          </RowBetween>
+                        </AutoColumn>
+                      )
+                      : (
+                        <div style={{display: 'flex', justifyContent: 'center'}}>
+                          <Spinner />
+                        </div>
+                      )
+                  }
                 </AutoColumn>
               </Box>
             </Panel>
@@ -166,7 +195,17 @@ function GlobalPage( { tokenWeights } ) {
                     </RowBetween>
                   </ListOptions>
                   <Panel style={{ marginTop: '6px', padding: '1.125rem 0 ' }}>
-                    <PairList pairs={historyData[idx]} />
+                    {
+                      loadingHistory === false
+                      ? (
+                        <PairList pairs={historyData[idx]} />
+                      )
+                      : (
+                        <div style={{display: 'flex', justifyContent: 'center'}} key={idx}>
+                          <Spinner />
+                        </div>
+                      )
+                    }
                   </Panel>
                 </div>
               )

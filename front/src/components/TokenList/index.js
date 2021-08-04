@@ -8,7 +8,6 @@ import TokenLogo from '../TokenLogo'
 import { CustomLink } from '../Link'
 import Row from '../Row'
 import { Divider } from '..'
-
 import { formattedNum, formattedPercent } from '../../utils'
 import { useMedia } from 'react-use'
 import { withRouter } from 'react-router-dom'
