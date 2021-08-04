@@ -1,11 +1,14 @@
+require('dotenv').config();
 const Sequelize = require('sequelize');
 const db = {}
+const dbUser = process.env.MYSQL_USER || 'root';
+const dbPassword = process.env.MYSQL_PASSWORD || ''
 
-const sequelize = new Sequelize("pio3", "root", "", {
-  host:    "localhost",
-  dialect: "mysql",
+const sequelize = new Sequelize("pio3", dbUser, dbPassword, {
+  host: 'localhost',
+  port: process.env.MYSQL_PORT || 3306,
+  dialect: 'mysql',
   operatorsAliases: true,
-
   pool:{
     max: 5,
     min: 0,
