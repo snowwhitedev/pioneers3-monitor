@@ -13,8 +13,8 @@ router.get('/address-weight', async (req, res) => {
     const weight = await getAddressWeight(token, address, currentStamp);
     res.json(weight.value);
   } catch (error) {
-    // res.status(500).send({ error });
-    res.send('error:' + error );
+    res.status(500).send({ error });
+    // res.send('error:' + error );
   }
 });
 
@@ -25,7 +25,8 @@ router.get('/total-weight', async (req, res) => {
     const weight = await getTotalSupply(LP_TOKENS[Number(lp_idx)], currentStamp);
     res.json(weight.value);
   } catch (error) {
-    res.send('error:' + error);
+    res.status(500).send({ error });
+    // res.send('error:' + error);
   }
 });
 
@@ -99,8 +100,8 @@ router.get("/history-data", async (req, res)=>{
     await Task.bulkCreate([...newLPTotalWeights, ...newAddrWeights]);
     res.json([...savedAddrHistory, ...newAddrWeights, ...savedTokenHistory, ...newLPTotalWeights])
   } catch (error) {
-    // res.status(500).send({ error })
-    res.send('error:' + error);
+    res.status(500).send({ error })
+    // res.send('error:' + error);
   }
 })
 

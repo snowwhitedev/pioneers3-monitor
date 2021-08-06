@@ -91,7 +91,6 @@ const formatWeightHistoryItems = (address, data, lpIdx) => {
 
 export async function getHistoryData(address) {
   const url = `${API_BASE_URL}history-data?address=${address}`
-
   try {
     const { data } = await axios.get(url)
     const formattedQtumQiList = formatWeightHistoryItems(address, data, 0)

@@ -1,7 +1,7 @@
 {
-  "name": "@qinitro/info",
+  "name": "qiswap-pio3-monitor",
   "private": true,
-  "homepage": "https://info.qi.nitro.org",
+  "homepage": ".",
   "devDependencies": {
     "@popperjs/core": "^2.4.2",
     "@reach/portal": "^0.10.3",
